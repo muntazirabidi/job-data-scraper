@@ -9,6 +9,22 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException
 from utils import db_connection, setup_database, insert_jobs_batch
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get LinkedIn credentials from environment variables
+LINKEDIN_USERNAME = os.getenv("LINKEDIN_USERNAME")
+LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD")
+
+# Job categories to scrape (same as in the Indeed scraper)
+JOB_CATEGORIES = [
+    "Quantitative Finance", "Quantitative Developer", "Quantitative Researcher", "Quantitative Analyst",
+    "Consultant", "AI Research Scientist", "AI Scientist", "AI Engineer", "Data Scientist", "Data Engineer",
+    "Machine Learning Scientist", "Machine Learning Engineer", "Energy", "Sustainability", "Environment", "Climate"
+]
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -44,8 +60,8 @@ def login_to_linkedin(driver, username, password):
     
     time.sleep(5)  # Wait for login to complete
 
-def scrape_job_listings(driver, conn, num_pages=10):
-    base_url = "https://www.linkedin.com/jobs/search/?keywords=Data%20Scientist&location=United%20Kingdom"
+def scrape_job_listings(driver, conn, job_category, num_pages=10):
+    base_url = f"https://www.linkedin.com/jobs/search/?keywords={job_category.replace(' ', '%20')}&location=United%20Kingdom"
     new_jobs = []
     date_scraped = datetime.now().date()
 
@@ -54,7 +70,7 @@ def scrape_job_listings(driver, conn, num_pages=10):
         driver.get(url)
         time.sleep(random.uniform(3, 7))
 
-        logging.info(f"Scraping page {page}")
+        logging.info(f"Scraping {job_category} - page {page}")
 
         try:
             job_cards = wait_for_element(driver, By.CLASS_NAME, "jobs-search__results-list")
@@ -70,7 +86,7 @@ def scrape_job_listings(driver, conn, num_pages=10):
 
                     job = {
                         'source': 'LinkedIn',
-                        'category': None,
+                        'category': job_category,
                         'title': title_elem.text if title_elem else "N/A",
                         'company': company_elem.text if company_elem else "N/A",
                         'location': location_elem.text if location_elem else "N/A",
@@ -105,7 +121,7 @@ def scrape_job_listings(driver, conn, num_pages=10):
             logging.error(f"Timeout waiting for job cards on page {page}")
             continue
 
-        logging.info(f"Completed page {page}, total new jobs scraped: {len(new_jobs)}")
+        logging.info(f"Completed {job_category} - page {page}, total new jobs scraped: {len(new_jobs)}")
 
     if new_jobs:
         insert_jobs_batch(conn, new_jobs)
@@ -140,9 +156,15 @@ def main():
         setup_database(conn)
         driver = setup_driver()
         try:
-            # Provide LinkedIn credentials here
-            login_to_linkedin(driver, "your_username", "your_password")
-            scrape_job_listings(driver, conn)
+            # Use credentials from environment variables
+            login_to_linkedin(driver, LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
+
+            # Loop through job categories and scrape listings for each category
+            for job_category in JOB_CATEGORIES:
+                logging.info(f"Starting to scrape for job category: {job_category}")
+                scrape_job_listings(driver, conn, job_category)
+                logging.info(f"Finished scraping for job category: {job_category}")
+
             logging.info("Scraping completed and data saved to database.")
         except Exception as e:
             logging.error(f"An unexpected error occurred: {str(e)}")
