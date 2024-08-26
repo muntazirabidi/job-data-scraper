@@ -4,7 +4,7 @@
 This project contains Python scripts for scraping job listings from LinkedIn and Indeed. The data is stored in a unified SQLite database (`job_listings.db`).
 
 ## Folder Structure
-'''
+```bash
 project-root/
     ├── data-scraping/           # Folder for scraping scripts and utilities
     │   ├── linkedin_scraper.py  # Script for LinkedIn scraping
@@ -13,7 +13,7 @@ project-root/
     │   ├── job_listings.db      # SQLite database (initially empty, will be populated by scrapers)
     │   └── requirements.txt     # Python dependencies for scraping
     └── README.md                # Documentation
-'''
+```
 
 
 ## Installation
