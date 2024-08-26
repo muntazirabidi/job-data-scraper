@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 JOB_CATEGORIES = [
     "Quantitative Finance", "Quantitative Developer", "Quantitative Researcher", "Quantitative Analyst",
     "Consultant", "AI Research Scientist", "AI Scientist", "AI Engineer", "Data Scientist", "Data Engineer",
-    "Machine Learning Scientist", "Machine Learning Engineer", "Energy", "Sustainability", "Environment", "Climate"
+    "Machine Learning Scientist", "Machine Learning Engineer", "Energy"
 ]
 
 def setup_driver(user_agent=None):

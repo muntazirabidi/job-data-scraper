@@ -1,2 +1,16 @@
 # Ignore environment variables
 .env
+# Ignore specific scraper files that don't work
+direct_scrapper.py
+glassdoor_scrapper.py
+linkedin_scrapper.py
+monster_scrapper.py
+
+# Ignore Python cache files
+__pycache__/
+
+# Ignore SQLite database files (if you don't want to push the database)
+*.db
+
+# Ignore Jupyter Notebook checkpoints
+notebook/.ipynb_checkpoints/
