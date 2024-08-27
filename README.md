@@ -10,7 +10,7 @@ project-root/
     │   ├── linkedin_scraper.py  # Script for LinkedIn scraping
     │   ├── indeed_scraper.py    # Script for Indeed scraping
     │   ├── utils.py             # Utility functions (e.g., database connection, insertion)
-    │   ├── job_listings.db      # SQLite database (initially empty, will be populated by scrapers)
+    │   ├── job_listings.db      # SQLite database 
     │   └── requirements.txt     # Python dependencies for scraping
     └── README.md                # Documentation
 ```
